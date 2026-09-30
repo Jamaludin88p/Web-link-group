@@ -34,6 +34,7 @@ window.CONFIG = {
     {
       namagc: "LICH - MD || Fast Respon",
       linkgc: "https://chat.whatsapp.com/CKThNoXDDJt3zW6A1vH9Td?s=cl&p=a&mlu=4&iam=2",
+      imgprofile: "https://u.pone.rs/jsfpqage.jpg",
       deskripsi: "Tempat ngobrol santai dan info terbaru dari bot."
     }
     // { namagc: "Grup Baru", linkgc: "https://chat.whatsapp.com/xxxx" },
