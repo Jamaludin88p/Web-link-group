@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#E4F2EC">
+  <title>Upload link grup</title>
+  <link rel="icon" id="favicon" type="image/jpeg" href="https://u.pone.rs/raqbrzjd.jpg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="upload.css">
+</head>
+<body>
+  <div class="wrap narrow">
+    <header class="topbar">
+      <a class="brand" id="brand" href="/">Kumpulan Link Grup</a>
+      <div class="top-actions">
+        <a class="contact" href="/">Lihat daftar grup</a>
+        <button class="btn btn-ghost" id="logout" type="button" hidden>Keluar</button>
+      </div>
+    </header>
+
+    <!-- MASUK / DAFTAR -->
+    <section id="authView" hidden>
+      <h1 class="page-title">Masuk untuk upload grup</h1>
+      <p class="page-sub">Kamu perlu akun untuk menambahkan link grup WhatsApp. Melihat daftar grup tidak perlu akun.</p>
+
+      <div class="tabs" role="group" aria-label="Pilih masuk atau daftar">
+        <button type="button" class="tab" id="tabLogin" aria-pressed="true">Masuk</button>
+        <button type="button" class="tab" id="tabRegister" aria-pressed="false">Daftar</button>
+      </div>
+
+      <form id="authForm" class="panel-card">
+        <label class="field"><span>Username</span>
+          <input id="u" name="username" autocomplete="username" autocapitalize="none" maxlength="20" required>
+        </label>
+        <label class="field"><span>Password</span>
+          <input id="p" name="password" type="password" autocomplete="current-password" maxlength="100" required>
+        </label>
+        <p class="hint" id="authHint" hidden>Username 3-20 karakter (huruf, angka, titik, atau garis bawah). Password minimal 8 karakter.</p>
+        <p class="form-msg err" id="authErr" role="alert"></p>
+        <button class="btn btn-primary" id="authBtn" type="submit">Masuk</button>
+      </form>
+    </section>
+
+    <!-- UPLOAD -->
+    <section id="appView" hidden>
+      <h1 class="page-title">Upload link grup</h1>
+      <p class="page-sub" id="who"></p>
+
+      <form id="groupForm" class="panel-card">
+        <h2 id="formTitle">Grup baru</h2>
+        <label class="field"><span>Link grup WhatsApp</span>
+          <input id="f-link" inputmode="url" placeholder="https://chat.whatsapp.com/..." autocomplete="off" required>
+          <small class="hint" id="linkHint" role="status"></small>
+        </label>
+        <label class="field"><span>Nama grup</span>
+          <input id="f-nama" maxlength="100" required>
+        </label>
+        <label class="field"><span>Link gambar profil (opsional)</span>
+          <input id="f-img" placeholder="https://.../foto.jpg" autocomplete="off">
+        </label>
+        <label class="field"><span>Deskripsi (opsional)</span>
+          <textarea id="f-desc" rows="2" maxlength="300"></textarea>
+        </label>
+        <p class="form-msg err" id="formErr" role="alert"></p>
+        <div class="btn-row">
+          <button class="btn btn-primary" id="saveBtn" type="submit">Upload grup</button>
+          <button class="btn btn-ghost" id="cancelBtn" type="button" hidden>Batal</button>
+        </div>
+      </form>
+
+      <div class="list-head">
+        <h2>Grup saya</h2>
+        <span class="count" id="count"></span>
+      </div>
+      <div id="rows" class="rows"></div>
+      <div class="empty" id="rowsEmpty" hidden>
+        <strong>Kamu belum upload grup</strong>
+        Tempel link grup WhatsApp di formulir di atas.
+      </div>
+
+      <details class="panel-card pw">
+        <summary>Ganti password</summary>
+        <form id="pwForm">
+          <label class="field"><span>Password lama</span>
+            <input id="pw-old" type="password" autocomplete="current-password" required>
+          </label>
+          <label class="field"><span>Password baru (minimal 8 karakter)</span>
+            <input id="pw-new" type="password" autocomplete="new-password" minlength="8" maxlength="100" required>
+          </label>
+          <p class="form-msg" id="pwMsg" role="status"></p>
+          <button class="btn btn-primary" type="submit">Ganti password</button>
+        </form>
+      </details>
+    </section>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="config.js"></script>
+  <script src="upload.js"></script>
+</body>
+</html>

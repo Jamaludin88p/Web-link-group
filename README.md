@@ -1,40 +1,34 @@
-# Web Kumpulan Link Grup (dengan admin + MongoDB)
+# Web Kumpulan Link Grup WhatsApp (login + MongoDB)
 
-Situs statis + serverless API di Vercel. Grup bisa ditambah dua cara:
-1. Lewat halaman **/admin** (disimpan di MongoDB, langsung tampil tanpa deploy ulang).
-2. Lewat `config.js` (cara lama, tetap jalan). Set `pakaiDatabase: false` untuk mematikan database.
+- Semua orang bisa **melihat** daftar grup di halaman utama.
+- Untuk **upload** link grup, pengunjung harus daftar / masuk dulu di `/upload`.
+- Hanya link grup WhatsApp (`chat.whatsapp.com/...`) yang diterima. Link lain ditolak.
+- Setiap orang hanya bisa mengubah / menghapus grup miliknya sendiri.
+- Grup yang ditulis di `config.js` tetap tampil (cara lama). Set `pakaiDatabase: false` untuk mematikan database.
 
-## 1. Siapkan MongoDB Atlas (gratis)
-1. Buat cluster gratis di mongodb.com/atlas, lalu buat Database User (username + password).
-2. Network Access > Add IP Address > **Allow access from anywhere (0.0.0.0/0)**. Vercel memakai IP yang berubah-ubah.
-3. Connect > Drivers > salin connection string, ganti `<password>` dengan password user tadi.
-
-## 2. Isi Environment Variables di Vercel
-Project > Settings > Environment Variables (lalu Redeploy):
-
+## Environment Variables di Vercel (hanya 3, dua wajib)
 | Nama | Isi |
 |---|---|
-| MONGODB_URI | connection string dari Atlas |
-| MONGODB_DB | linkgc (boleh diubah) |
-| AUTH_SECRET | teks acak panjang, minimal 16 karakter |
-| ADMIN_USER | username admin pertama |
-| ADMIN_PASS | password admin pertama, minimal 8 karakter |
+| MONGODB_URI | connection string dari MongoDB Atlas (wajib) |
+| AUTH_SECRET | teks acak, minimal 16 karakter (wajib) |
+| MONGODB_DB | nama database, default `linkgc` (opsional) |
 
-Akun admin dibuat otomatis saat login pertama, lalu passwordnya bisa diganti dari halaman admin. Setelah itu ADMIN_PASS tidak dipakai lagi.
+Setelah mengisi atau mengubah variabel, lakukan **Redeploy**.
+MongoDB Atlas: Network Access harus mengizinkan `0.0.0.0/0` karena IP Vercel berubah-ubah.
 
-## 3. Pakai
-Buka `https://domainmu/admin`, masuk, lalu tambah / ubah / hapus grup.
+## Perlindungan bawaan
+- Password disimpan sebagai hash scrypt.
+- Sesi memakai cookie HttpOnly + Secure + SameSite=Strict (7 hari).
+- Maksimal 8 salah password per IP per 15 menit.
+- Maksimal 5 pendaftaran per IP per jam.
+- Maksimal 5 upload per akun per jam, dan 20 grup per akun.
+- Link grup unik: link yang sama tidak bisa diupload dua kali.
+
+## Menghapus grup / akun bermasalah
+Buka MongoDB Atlas > Browse Collections > database `linkgc` > koleksi `groups` (atau `users`), lalu hapus dokumennya.
 
 ## Struktur
-- `index.html`, `app.js`, `style.css`, `config.js` : halaman publik
-- `admin.html`, `admin.js`, `admin.css` : halaman admin
-- `api/` : login, session, groups, password (serverless, Node.js)
+- `index.html`, `app.js`, `style.css`, `config.js` : halaman daftar (publik)
+- `upload.html`, `upload.js`, `upload.css` : masuk / daftar dan upload
+- `api/` : register, login, session, groups, password (serverless Node.js)
 - `package.json` : satu dependensi (`mongodb`)
-
-## Keamanan yang sudah ada
-- Password disimpan sebagai hash scrypt, tidak pernah plain text.
-- Sesi memakai cookie HttpOnly + Secure + SameSite=Strict, berlaku 7 hari.
-- Maksimal 8 kali salah password per IP dalam 15 menit.
-- Semua perubahan data wajib login. Daftar grup untuk publik di-cache singkat di CDN agar database tidak dibebani.
-
-Jangan commit file `.env`. Untuk tes lokal: salin `.env.example` ke `.env.local`, lalu jalankan `npm i` dan `vercel dev`.
