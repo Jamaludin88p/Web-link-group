@@ -35,25 +35,6 @@ window.CONFIG = {
       namagc: "Grup Utama Komunitas",
       linkgc: "https://chat.whatsapp.com/GANTI_LINK_1",
       deskripsi: "Tempat ngobrol santai dan info terbaru dari bot."
-    },
-    {
-      namagc: "Info & Update Bot",
-      linkgc: "https://chat.whatsapp.com/GANTI_LINK_2",
-      deskripsi: "Pengumuman fitur baru dan perbaikan."
-    },
-    {
-      namagc: "Diskusi Bebas",
-      linkgc: "https://chat.whatsapp.com/GANTI_LINK_3"
-    },
-    {
-      namagc: "Jual Beli & Promosi",
-      linkgc: "https://chat.whatsapp.com/GANTI_LINK_4",
-      deskripsi: "Khusus lapak dan promosi, patuhi aturan grup."
-    },
-    {
-      namagc: "Channel Telegram",
-      linkgc: "https://t.me/GANTI_USERNAME",
-      deskripsi: "Cadangan kalau grup WhatsApp penuh."
     }
     // { namagc: "Grup Baru", linkgc: "https://chat.whatsapp.com/xxxx" },
   ]
