@@ -5,18 +5,30 @@ const WINDOW_MS = 15 * 60 * 1000;
 const MAX_FAILS = 8;
 
 // Akun admin pertama dibuat dari ADMIN_USER + ADMIN_PASS kalau koleksi users masih kosong.
+// Mengembalikan: "ada" | "dibuat" | "user-kosong" | "pass-pendek"
 async function ensureAdmin(db) {
   const users = db.collection("users");
-  if ((await users.countDocuments({}, { limit: 1 })) > 0) return;
+  if ((await users.countDocuments({}, { limit: 1 })) > 0) return "ada";
+
   const username = String(process.env.ADMIN_USER || "").trim().toLowerCase();
   const pass = String(process.env.ADMIN_PASS || "");
-  if (!username || pass.length < 8) return;
+  if (!username) return "user-kosong";
+  if (pass.length < 8) return "pass-pendek";
+
   try {
     await users.insertOne({ username, pass: await hashPassword(pass), createdAt: new Date() });
   } catch (e) {
     if (e.code !== 11000) throw e;
   }
+  return "dibuat";
 }
+
+const SETUP_PESAN = {
+  "user-kosong":
+    "Akun admin belum bisa dibuat: ADMIN_USER belum terbaca. Isi ADMIN_USER di Vercel (Settings > Environment Variables), lalu Redeploy.",
+  "pass-pendek":
+    "Akun admin belum bisa dibuat: ADMIN_PASS belum terbaca atau kurang dari 8 karakter. Perbaiki di Vercel (Settings > Environment Variables), lalu Redeploy."
+};
 
 module.exports = async (req, res) => {
   res.setHeader("Cache-Control", "no-store");
@@ -38,7 +50,10 @@ module.exports = async (req, res) => {
       return res.status(429).json({ error: "Terlalu banyak percobaan gagal. Coba lagi dalam 15 menit." });
     }
 
-    await ensureAdmin(db);
+    // Kalau belum ada admin dan variabel env belum benar, beri tahu penyebab sebenarnya.
+    const status = await ensureAdmin(db);
+    if (SETUP_PESAN[status]) return res.status(503).json({ error: SETUP_PESAN[status] });
+
     const user = await db.collection("users").findOne({ username });
     // Tetap hitung hash walau user tidak ada, supaya waktu respons tidak membocorkan username.
     const ok = user
