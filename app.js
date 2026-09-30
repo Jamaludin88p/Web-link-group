@@ -43,7 +43,8 @@
       return;
     }
     seen.add(link);
-    items.push({ nama, link, deskripsi: String(g.deskripsi || "").trim(), urut: i });
+    const img = String(g.imgprofile || g.imgProfile || g.Imgprofile || "").trim();
+    items.push({ nama, link, img, deskripsi: String(g.deskripsi || "").trim(), urut: i });
   });
 
   const baruDari = items.length - Math.max(0, Number(C.jumlahBadgeBaru) || 0);
@@ -103,9 +104,24 @@
     c.style.setProperty("--i", Math.min(i, 12));
 
     const head = el("div", "card-head");
-    const av = el("div", "avatar", initials(it.nama));
-    av.style.background = colorOf(it.nama);
+    const av = el("div", "avatar");
     av.setAttribute("aria-hidden", "true");
+    const showInitials = () => {
+      av.replaceChildren(document.createTextNode(initials(it.nama)));
+      av.style.background = colorOf(it.nama);
+    };
+    if (it.img) {
+      const im = document.createElement("img");
+      im.alt = "";
+      im.loading = "lazy";
+      im.decoding = "async";
+      im.referrerPolicy = "no-referrer";
+      im.src = it.img;
+      im.addEventListener("error", showInitials);   // kalau gambar gagal dimuat, pakai inisial
+      av.append(im);
+    } else {
+      showInitials();
+    }
     head.append(av, el("span", "platform", platformOf(it.link)));
     if (it.baru) head.append(el("span", "badge", "Baru"));
 
