@@ -72,11 +72,11 @@ function getSession(req) {
   return verify(parseCookies(req)[COOKIE]);
 }
 
-// Wajib login. Permintaan yang mengubah data juga harus membawa header X-Requested-With.
+// Wajib login. Permintaan yang mengubah data juga harus membawa header X-Requested-With: web.
 function requireAuth(req, res) {
   const s = getSession(req);
   if (!s) { res.status(401).json({ error: "Belum login" }); return null; }
-  if (req.method !== "GET" && req.headers["x-requested-with"] !== "admin") {
+  if (req.method !== "GET" && req.headers["x-requested-with"] !== "web") {
     res.status(403).json({ error: "Permintaan ditolak" });
     return null;
   }

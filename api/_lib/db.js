@@ -15,8 +15,11 @@ async function getDb() {
         const db = c.db(process.env.MONGODB_DB || "linkgc");
         await Promise.all([
           db.collection("groups").createIndex({ linkgc: 1 }, { unique: true }),
+          db.collection("groups").createIndex({ owner: 1 }),
           db.collection("users").createIndex({ username: 1 }, { unique: true }),
-          db.collection("attempts").createIndex({ at: 1 }, { expireAfterSeconds: 900 })
+          db.collection("attempts").createIndex({ at: 1 }, { expireAfterSeconds: 900 }),
+          db.collection("signups").createIndex({ at: 1 }, { expireAfterSeconds: 3600 }),
+          db.collection("uploads").createIndex({ at: 1 }, { expireAfterSeconds: 3600 })
         ]);
         return db;
       })
