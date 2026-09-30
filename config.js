@@ -32,8 +32,8 @@ window.CONFIG = {
      ------------------------------------------------------ */
   grup: [
     {
-      namagc: "Grup Utama Komunitas",
-      linkgc: "https://chat.whatsapp.com/GANTI_LINK_1",
+      namagc: "LICH - MD || Fast Respon",
+      linkgc: "https://chat.whatsapp.com/CKThNoXDDJt3zW6A1vH9Td?s=cl&p=a&mlu=4&iam=2",
       deskripsi: "Tempat ngobrol santai dan info terbaru dari bot."
     }
     // { namagc: "Grup Baru", linkgc: "https://chat.whatsapp.com/xxxx" },
