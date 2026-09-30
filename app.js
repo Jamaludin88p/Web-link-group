@@ -7,6 +7,7 @@
     kontak: { label: "", url: "" },
     urutanTerbaru: true,
     jumlahBadgeBaru: 0,
+    pakaiDatabase: true,
     footer: "",
     favicon: "",
     grup: []
@@ -36,30 +37,40 @@
     a.hidden = false;
   }
 
-  // ---- bersihkan data: wajib ada nama + link http(s), buang duplikat
-  const seen = new Set();
-  const items = [];
-  (C.grup || []).forEach((g, i) => {
-    const nama = String(g.namagc || "").trim();
-    const link = String(g.linkgc || "").trim();
-    if (!nama || !/^https?:\/\//i.test(link)) {
-      console.warn(`[config.js] grup ke-${i + 1} dilewati: namagc/linkgc tidak valid`, g);
-      return;
-    }
-    if (seen.has(link)) {
-      console.warn(`[config.js] link ganda dilewati: ${link}`);
-      return;
-    }
-    seen.add(link);
-    const img = String(g.imgprofile || g.imgProfile || g.Imgprofile || "").trim();
-    items.push({ nama, link, img, deskripsi: String(g.deskripsi || "").trim(), urut: i });
-  });
+  // ---- data: gabungan config.js (lama) + database (baru)
+  let items = [];
+  let loading = !!C.pakaiDatabase;
 
-  const baruDari = items.length - Math.max(0, Number(C.jumlahBadgeBaru) || 0);
-  items.forEach((it, idx) => { it.baru = idx >= baruDari && C.jumlahBadgeBaru > 0; });
-  if (C.urutanTerbaru) items.reverse();
+  // Wajib ada nama + link http(s). Link ganda dilewati (yang pertama menang).
+  function clean(list, seen, sumber) {
+    const out = [];
+    (list || []).forEach((g, i) => {
+      const nama = String(g.namagc || "").trim();
+      const link = String(g.linkgc || "").trim();
+      if (!nama || !/^https?:\/\//i.test(link)) {
+        console.warn(`[${sumber}] grup ke-${i + 1} dilewati: namagc/linkgc tidak valid`, g);
+        return;
+      }
+      if (seen.has(link)) {
+        console.warn(`[${sumber}] link ganda dilewati: ${link}`);
+        return;
+      }
+      seen.add(link);
+      const img = String(g.imgprofile || g.imgProfile || g.Imgprofile || "").trim();
+      out.push({ nama, link, img, deskripsi: String(g.deskripsi || "").trim() });
+    });
+    return out;
+  }
 
-  $("total").textContent = items.length;
+  function compose(dbList) {
+    const seen = new Set();
+    const merged = clean(C.grup, seen, "config.js").concat(clean(dbList, seen, "database"));
+    const n = Math.max(0, Number(C.jumlahBadgeBaru) || 0);
+    merged.forEach((it, idx) => { it.baru = n > 0 && idx >= merged.length - n; });
+    if (C.urutanTerbaru) merged.reverse();
+    items = merged;
+    $("total").textContent = items.length;
+  }
 
   // ---- helper
   function platformOf(url) {
@@ -125,7 +136,7 @@
       im.decoding = "async";
       im.referrerPolicy = "no-referrer";
       im.src = it.img;
-      im.addEventListener("error", showInitials);   // kalau gambar gagal dimuat, pakai inisial
+      im.addEventListener("error", showInitials);   // gambar gagal dimuat -> pakai inisial
       av.append(im);
     } else {
       showInitials();
@@ -145,27 +156,33 @@
     actions.append(join, btn);
 
     c.append(head, el("h2", null, it.nama));
-    if (it.deskripsi) c.append(el("p", null, it.deskripsi));
-    else c.append(el("p"));
+    c.append(it.deskripsi ? el("p", null, it.deskripsi) : el("p"));
     c.append(actions);
     return c;
   }
 
   function render(query) {
     const q = (query || "").trim().toLowerCase();
+    const empty = $("empty");
+
+    if (loading) {
+      $("list").replaceChildren();
+      empty.hidden = true;
+      $("status").textContent = "Memuat daftar grup...";
+      return;
+    }
+
     const list = q
       ? items.filter((it) => (it.nama + " " + it.deskripsi).toLowerCase().includes(q))
       : items;
 
-    const grid = $("list");
-    grid.replaceChildren(...list.map(card));
+    $("list").replaceChildren(...list.map(card));
 
-    const empty = $("empty");
     if (!list.length) {
       empty.hidden = false;
       empty.replaceChildren();
       if (!items.length) {
-        empty.append(el("strong", null, "Belum ada grup"), document.createTextNode("Tambahkan grup di bagian grup pada config.js."));
+        empty.append(el("strong", null, "Belum ada grup"), document.createTextNode("Admin belum menambahkan grup."));
       } else {
         empty.append(el("strong", null, "Grup tidak ditemukan"), document.createTextNode("Coba kata kunci lain."));
       }
@@ -176,5 +193,22 @@
   }
 
   $("q").addEventListener("input", (e) => render(e.target.value));
+
+  // ---- mulai
+  compose([]);
   render("");
+
+  if (C.pakaiDatabase) {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 7000);
+    fetch("/api/groups", { headers: { Accept: "application/json" }, signal: ctrl.signal })
+      .then((r) => (r.ok ? r.json() : Promise.reject(new Error("HTTP " + r.status))))
+      .then((d) => compose(Array.isArray(d.groups) ? d.groups : []))
+      .catch((e) => console.info("[database] tidak tersedia, memakai config.js saja:", e.message))
+      .finally(() => {
+        clearTimeout(timer);
+        loading = false;
+        render($("q").value);
+      });
+  }
 })();

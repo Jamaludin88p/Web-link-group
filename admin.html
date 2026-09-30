@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#E4F2EC">
+  <title>Admin</title>
+  <link rel="icon" id="favicon" type="image/jpeg" href="https://u.pone.rs/raqbrzjd.jpg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <div class="wrap narrow">
+    <header class="topbar">
+      <span class="brand" id="brand">Admin</span>
+      <div class="top-actions">
+        <a class="contact" href="/">Lihat situs</a>
+        <button class="btn btn-ghost" id="logout" type="button" hidden>Keluar</button>
+      </div>
+    </header>
+
+    <!-- LOGIN -->
+    <section id="loginView" hidden>
+      <h1 class="admin-title">Masuk admin</h1>
+      <p class="admin-sub">Masuk untuk menambah, mengubah, atau menghapus grup.</p>
+      <form id="loginForm" class="panel-card">
+        <label class="field"><span>Username</span>
+          <input id="u" name="username" autocomplete="username" autocapitalize="none" required>
+        </label>
+        <label class="field"><span>Password</span>
+          <input id="p" name="password" type="password" autocomplete="current-password" required>
+        </label>
+        <p class="form-msg err" id="loginErr" role="alert"></p>
+        <button class="btn btn-primary" id="loginBtn" type="submit">Masuk</button>
+      </form>
+    </section>
+
+    <!-- PANEL -->
+    <section id="panelView" hidden>
+      <h1 class="admin-title">Kelola grup</h1>
+      <p class="admin-sub" id="who"></p>
+
+      <form id="groupForm" class="panel-card">
+        <h2 id="formTitle">Tambah grup</h2>
+        <label class="field"><span>Nama grup</span>
+          <input id="f-nama" maxlength="100" required>
+        </label>
+        <label class="field"><span>Link grup</span>
+          <input id="f-link" type="url" inputmode="url" placeholder="https://chat.whatsapp.com/..." required>
+        </label>
+        <label class="field"><span>Link gambar profil (opsional)</span>
+          <input id="f-img" placeholder="https://.../foto.jpg">
+        </label>
+        <label class="field"><span>Deskripsi (opsional)</span>
+          <textarea id="f-desc" rows="2" maxlength="300"></textarea>
+        </label>
+        <p class="form-msg err" id="formErr" role="alert"></p>
+        <div class="btn-row">
+          <button class="btn btn-primary" id="saveBtn" type="submit">Tambah grup</button>
+          <button class="btn btn-ghost" id="cancelBtn" type="button" hidden>Batal</button>
+        </div>
+      </form>
+
+      <div class="list-head">
+        <h2>Grup di database</h2>
+        <span class="count" id="count"></span>
+      </div>
+      <div id="rows" class="rows"></div>
+      <div class="empty" id="rowsEmpty" hidden>
+        <strong>Belum ada grup di database</strong>
+        Tambahkan grup lewat formulir di atas.
+      </div>
+      <p class="note">Grup yang ditulis langsung di config.js tetap tampil di situs, tapi tidak muncul di daftar ini.</p>
+
+      <details class="panel-card pw">
+        <summary>Ganti password</summary>
+        <form id="pwForm">
+          <label class="field"><span>Password lama</span>
+            <input id="pw-old" type="password" autocomplete="current-password" required>
+          </label>
+          <label class="field"><span>Password baru (minimal 8 karakter)</span>
+            <input id="pw-new" type="password" autocomplete="new-password" minlength="8" required>
+          </label>
+          <p class="form-msg" id="pwMsg" role="status"></p>
+          <button class="btn btn-primary" type="submit">Ganti password</button>
+        </form>
+      </details>
+    </section>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="config.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>
