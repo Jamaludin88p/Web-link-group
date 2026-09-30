@@ -7,7 +7,8 @@
 window.CONFIG = {
   // Tampilan umum
   namaSitus: "Kumpulan Link Grup",
-  namaBot: "Lich MD",                 // tampil di pojok kiri atas
+  namaBot: "Lich MD",
+  favicon: "https://u.pone.rs/raqbrzjd.jpg",// tampil di pojok kiri atas
   judul: "Temukan grup, langsung gabung.",
   deskripsi: "Daftar grup resmi yang dikelola bot kami. Klik Gabung untuk masuk, atau salin link untuk dibagikan.",
 
