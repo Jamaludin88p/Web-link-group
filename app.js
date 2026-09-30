@@ -8,6 +8,7 @@
     urutanTerbaru: true,
     jumlahBadgeBaru: 0,
     footer: "",
+    favicon: "",
     grup: []
   }, window.CONFIG || {});
 
@@ -17,6 +18,13 @@
 
   // ---- header & teks umum
   document.title = C.namaSitus;
+  if (C.favicon) {
+    $("favicon").href = C.favicon;
+    $("touchicon").href = C.favicon;
+    $("ogimage").content = C.favicon;
+  }
+  const ogt = document.querySelector('meta[property="og:title"]');
+  if (ogt) ogt.content = C.namaSitus;
   $("brand").textContent = C.namaBot || C.namaSitus;
   $("title").textContent = C.judul;
   $("desc").textContent = C.deskripsi;
